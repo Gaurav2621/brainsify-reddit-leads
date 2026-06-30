@@ -3,3 +3,9 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# Runtime state that can contain author usernames / draft text — never publish.
+data/pending.json
+
+# Your real contact details live here (gitignored); context.md stays a template.
+profile/context.local.md

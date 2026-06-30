@@ -12,16 +12,19 @@ def _config() -> dict:
     return _CONFIG
 
 
-def is_relevant(text: str) -> bool:
-    """True if the post text passes the keyword filters in config.yaml."""
-    filters = _config().get("filters", {})
+def is_blocked(text: str) -> bool:
+    """True if the text contains any blocked_keyword (an obvious ad / non-lead)."""
+    blocked = [b.lower() for b in _config().get("filters", {}).get("blocked_keywords", [])]
     t = (text or "").lower()
+    return any(b in t for b in blocked)
 
-    blocked = [b.lower() for b in filters.get("blocked_keywords", [])]
-    if any(b in t for b in blocked):
+
+def is_relevant(text: str) -> bool:
+    """True if the post passes the keyword filters in config.yaml."""
+    if is_blocked(text):
         return False
 
-    required = [r.lower() for r in filters.get("required_keywords", [])]
+    required = [r.lower() for r in _config().get("filters", {}).get("required_keywords", [])]
     if not required:
         return True
-    return any(r in t for r in required)
+    return any(r in (text or "").lower() for r in required)

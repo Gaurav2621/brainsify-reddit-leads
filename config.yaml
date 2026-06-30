@@ -6,10 +6,21 @@
 # raise `min_score` (e.g. 65-75) or trim keywords/subreddits.
 # ─────────────────────────────────────────────────────────────
 
-# Source mode:
-#   "rss" = no Reddit app/login needed — alerts only (no one-tap posting). Start here.
-#   "api" = uses your Reddit app creds — unlocks the one-tap Comment/DM bot (bot/watch.py).
-source: rss
+# Source mode (no Reddit app needed for rss/search/hybrid):
+#   "rss"    = watch your subreddits' /new feeds
+#   "search" = search ALL of Reddit for the buyer phrases in `search_query`
+#   "hybrid" = both, deduped  (recommended — widest coverage)
+#   "api"    = logged-in PRAW (needs a Reddit app; unlocks one-tap posting)
+source: hybrid
+
+# Site-wide search query (used in search/hybrid mode). ONE combined OR query so
+# Reddit doesn't rate-limit us. These are high-intent BUYER phrases — edit freely.
+search_query: >-
+  "need a website" OR "need a web developer" OR "looking for a web developer"
+  OR "build me a website" OR "website developer needed" OR "shopify developer"
+  OR "wordpress developer" OR "redesign my website" OR "need a landing page"
+  OR "need to automate" OR "ai automation" OR "automate my business"
+  OR "custom crm" OR "looking to hire a developer"
 
 # Subreddits to scan (without the "r/").
 subreddits:
@@ -54,8 +65,8 @@ subreddits:
   - msp
   - realtors
 
-# How many recent posts to pull per subreddit each run.
-scan_limit: 60
+# How many recent posts to pull each run (per subreddit feed / per search). Max 100.
+scan_limit: 100
 
 filters:
   # A post must contain AT LEAST ONE of these to be considered.
@@ -124,12 +135,26 @@ filters:
     - "dashboard"
     - "lead generation"
     - "follow up"
+    # --- pain phrases (real buyers who don't use tech jargon) ---
+    - "need someone to"
+    - "looking for someone to"
+    - "can someone build"
+    - "can someone make"
+    - "need help building"
+    - "need help with my site"
+    - "take orders online"
+    - "set up online"
+    - "by hand"
 
-  # If a post contains ANY of these, it's skipped (filters out other
-  # devs/agencies advertising, and "free work" noise).
+  # If a post contains ANY of these, it's skipped. ONLY unambiguous "I'm a
+  # provider advertising" / non-lead markers here — vague phrases like "i built"
+  # or "i offer" were REMOVED because real buyers use them ("I built a quick site
+  # myself but need a pro", "I offer $2000 to build a website"). The AI handles
+  # those borderline cases far better than a blunt substring match.
   blocked_keywords:
     - "[for hire]"
     - "for hire -"
+    - "[offer]"
     - "i am a developer"
     - "i'm a developer"
     - "i am a freelancer"
@@ -137,25 +162,14 @@ filters:
     - "freelancer available"
     - "available for hire"
     - "available for work"
+    - "available to work"
     - "looking for work"
     - "offering my services"
-    - "i offer"
-    - "my services"
     - "hire me"
-    - "i can build"
-    - "i will build"
     - "dm me if you need"
     - "portfolio review"
     - "free work"
     - "for exposure"
-    - "[offer]"
-    - "i built"
-    - "i made"
-    - "i created"
-    - "i've built"
-    - "i have built"
-    - "check out my"
-    - "available to work"
     - "talent tuesday"
     - "megathread"
 

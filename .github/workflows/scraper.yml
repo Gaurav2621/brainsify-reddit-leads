@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
           cache: "pip"
@@ -41,6 +41,17 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/seen.json || true
-          git diff --cached --quiet || git commit -m "chore: update seen posts"
-          git push
+          git add data/seen.json data/state.json 2>/dev/null || true
+          if git diff --cached --quiet; then
+            echo "No state change — nothing to commit."
+            exit 0
+          fi
+          git commit -m "chore: update bot state"
+          # Rebase-and-retry so an out-of-band commit on main can't fail the push.
+          for i in 1 2 3 4 5; do
+            if git push; then exit 0; fi
+            echo "push rejected — rebasing (attempt $i)"
+            git pull --rebase --autostash origin main || true
+          done
+          echo "push failed after retries" >&2
+          exit 1

@@ -32,10 +32,9 @@ def generate(prompt: str, model: str = "", rate_limit: float = 7.0) -> dict:
     _last_call = time.time()
 
     for m in models:
-        url = (
-            f"https://generativelanguage.googleapis.com/v1beta/models/"
-            f"{m}:generateContent?key={api_key}"
-        )
+        # Key goes in a header, NOT the URL query string, so it can't leak into
+        # logs/tracebacks (which include the request URL on connection errors).
+        url = f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent"
         payload = {
             "contents": [{"parts": [{"text": prompt}]}],
             "generationConfig": {
@@ -45,7 +44,7 @@ def generate(prompt: str, model: str = "", rate_limit: float = 7.0) -> dict:
             },
         }
         try:
-            resp = requests.post(url, json=payload, timeout=30)
+            resp = requests.post(url, headers={"x-goog-api-key": api_key}, json=payload, timeout=30)
             if resp.status_code == 200:
                 return _parse(resp)
             if resp.status_code in (429, 404):
@@ -54,7 +53,7 @@ def generate(prompt: str, model: str = "", rate_limit: float = 7.0) -> dict:
             print(f"[gemini] {m} -> HTTP {resp.status_code}")
             return {}
         except requests.RequestException as exc:
-            print(f"[gemini] {m} request error: {exc}")
+            print(f"[gemini] {m} request error: {type(exc).__name__}")
             return {}
 
     return {}
