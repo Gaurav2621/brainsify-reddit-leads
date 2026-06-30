@@ -51,6 +51,11 @@ subreddits:
   - n8n
   - Airtable
   - SaaS
+  - AiAutomations
+  - automate
+  - gohighlevel
+  - CRM
+  - webdevelopment
   # --- businesses / founders describing pain ---
   - Entrepreneur
   - smallbusiness
@@ -64,6 +69,8 @@ subreddits:
   - sweatystartup
   - msp
   - realtors
+  - cofounder
+  - startup
 
 # How many recent posts to pull each run (per subreddit feed / per search). Max 100.
 scan_limit: 100

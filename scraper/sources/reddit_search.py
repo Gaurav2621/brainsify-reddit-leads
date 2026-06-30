@@ -31,8 +31,11 @@ def fetch(query: str, limit: int = 100) -> list[dict]:
         f"q={urllib.parse.quote(query)}&sort=new&limit={limit}&type=link"
     )
 
+    # Reddit blocks the search endpoint from datacenter IPs (e.g. GitHub Actions),
+    # so fail FAST there (1 quick retry) instead of burning ~30s every run. From a
+    # residential IP (your Mac) this succeeds and gives true site-wide coverage.
     resp = None
-    for attempt in range(4):
+    for attempt in range(2):
         try:
             resp = requests.get(url, headers=HEADERS, timeout=25)
         except requests.RequestException as exc:
@@ -41,8 +44,8 @@ def fetch(query: str, limit: int = 100) -> list[dict]:
         if resp.status_code == 200:
             break
         if resp.status_code == 429:
-            print(f"[search] 429 rate-limited — backing off (attempt {attempt + 1})")
-            time.sleep(8)
+            print(f"[search] 429 (search blocked from this IP) — attempt {attempt + 1}")
+            time.sleep(3)
             continue
         print(f"[search] HTTP {resp.status_code}")
         return []
