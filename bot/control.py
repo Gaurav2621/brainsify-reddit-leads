@@ -85,7 +85,9 @@ def run_scan() -> int:
     if not _scan_lock.acquire(blocking=False):
         return 0  # a scan is already in progress
     try:
-        items = reddit_search.fetch(_config.get("search_query", ""), limit=_config.get("scan_limit", 100))
+        # Re-read config each scan so edits (query, score gate) apply without a restart.
+        cfg = yaml.safe_load((ROOT / "config.yaml").read_text())
+        items = reddit_search.fetch(cfg.get("search_query", ""), limit=cfg.get("scan_limit", 100))
         seen = _load_seen()
         fresh = [i for i in items if i["id"] not in seen]
         if not fresh:
@@ -95,7 +97,7 @@ def run_scan() -> int:
             from ai.pipeline import analyse_batch
             fresh = analyse_batch(fresh, context=_context())
 
-        min_score = _config.get("ai", {}).get("min_score", 0)
+        min_score = cfg.get("ai", {}).get("min_score", 0)
         sent = 0
         for item in fresh:
             if item.get("ai_failed"):

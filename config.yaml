@@ -21,6 +21,10 @@ search_query: >-
   OR "wordpress developer" OR "redesign my website" OR "need a landing page"
   OR "need to automate" OR "ai automation" OR "automate my business"
   OR "custom crm" OR "looking to hire a developer"
+  OR "need a developer" OR "hire a developer" OR "looking for a developer"
+  OR "website help" OR "build an app" OR "developer to build"
+  OR "need an online store" OR "help with my website"
+  OR "build a website for" OR "need someone to build"
 
 # Subreddits to scan (without the "r/").
 subreddits:
