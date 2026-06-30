@@ -1,0 +1,167 @@
+# ─────────────────────────────────────────────────────────────
+# Reddit Lead Bot — edit this file to tune what it finds.
+# No code changes needed. Just keywords + subreddits + thresholds.
+#
+# Coverage is intentionally WIDE here. If you get too many alerts,
+# raise `min_score` (e.g. 65-75) or trim keywords/subreddits.
+# ─────────────────────────────────────────────────────────────
+
+# Source mode:
+#   "rss" = no Reddit app/login needed — alerts only (no one-tap posting). Start here.
+#   "api" = uses your Reddit app creds — unlocks the one-tap Comment/DM bot (bot/watch.py).
+source: rss
+
+# Subreddits to scan (without the "r/").
+subreddits:
+  # --- where people hire builders / post gigs ---
+  - forhire
+  - freelance
+  - slavelabour
+  - DoneDirtCheap
+  - jobbit
+  - hiring
+  # --- website / ecommerce ---
+  - web_design
+  - webdev
+  - Wordpress
+  - shopify
+  - ecommerce
+  - woocommerce
+  - bigcommerce
+  - Squarespace
+  - wix
+  # --- AI automation / no-code / tooling ---
+  - automation
+  - nocode
+  - lowcode
+  - AI_Agents
+  - ArtificialInteligence
+  - zapier
+  - n8n
+  - Airtable
+  - SaaS
+  # --- businesses / founders describing pain ---
+  - Entrepreneur
+  - smallbusiness
+  - startups
+  - juststart
+  - Business
+  - EntrepreneurRideAlong
+  - SideProject
+  - indiehackers
+  - growmybusiness
+  - sweatystartup
+  - msp
+  - realtors
+
+# How many recent posts to pull per subreddit each run.
+scan_limit: 60
+
+filters:
+  # A post must contain AT LEAST ONE of these to be considered.
+  required_keywords:
+    # --- website work ---
+    - "need a website"
+    - "need a web"
+    - "looking for a developer"
+    - "looking for a web"
+    - "build a website"
+    - "build me a website"
+    - "website built"
+    - "new website"
+    - "revamp"
+    - "redesign"
+    - "fix my website"
+    - "website help"
+    - "website developer"
+    - "web developer"
+    - "web dev"
+    - "web app"
+    - "shopify"
+    - "wordpress"
+    - "woocommerce"
+    - "squarespace"
+    - "wix"
+    - "landing page"
+    - "ecommerce"
+    - "e-commerce"
+    - "online store"
+    # --- hiring / budget signals ---
+    - "hiring"
+    - "[hiring]"
+    - "looking to hire"
+    - "need help with"
+    - "willing to pay"
+    - "budget for"
+    - "quote for"
+    - "recommend a developer"
+    # --- AI automation / CRM / workflow ---
+    - "automate"
+    - "automation"
+    - "ai automation"
+    - "ai agent"
+    - "ai tool"
+    - "chatbot"
+    - "custom crm"
+    - "crm"
+    - "internal tool"
+    - "workflow"
+    - "zapier"
+    - "make.com"
+    - "n8n"
+    - "integrate"
+    - "integration"
+    - "api integration"
+    - "repetitive task"
+    - "manual process"
+    - "save time"
+    - "streamline"
+    - "data entry"
+    - "spreadsheet"
+    - "google sheets"
+    - "booking system"
+    - "scheduling system"
+    - "dashboard"
+    - "lead generation"
+    - "follow up"
+
+  # If a post contains ANY of these, it's skipped (filters out other
+  # devs/agencies advertising, and "free work" noise).
+  blocked_keywords:
+    - "[for hire]"
+    - "for hire -"
+    - "i am a developer"
+    - "i'm a developer"
+    - "i am a freelancer"
+    - "i'm a freelancer"
+    - "freelancer available"
+    - "available for hire"
+    - "available for work"
+    - "looking for work"
+    - "offering my services"
+    - "i offer"
+    - "my services"
+    - "hire me"
+    - "i can build"
+    - "i will build"
+    - "dm me if you need"
+    - "portfolio review"
+    - "free work"
+    - "for exposure"
+    - "[offer]"
+    - "i built"
+    - "i made"
+    - "i created"
+    - "i've built"
+    - "i have built"
+    - "check out my"
+    - "available to work"
+    - "talent tuesday"
+    - "megathread"
+
+ai:
+  enabled: true
+  model: "gemini-2.5-flash"
+  min_score: 65          # only Telegram-alert leads scoring >= this (raise for fewer/better)
+  rate_limit_seconds: 7
+  batch_size: 3          # smaller batches = reliable AI responses (no truncation)
