@@ -7,5 +7,10 @@ venv/
 # Runtime state that can contain author usernames / draft text — never publish.
 data/pending.json
 
+# Local Mac search-bot state (separate from the GitHub bot's seen.json).
+data/seen.local.json
+data/control.json
+data/search-bot.log
+
 # Your real contact details live here (gitignored); context.md stays a template.
 profile/context.local.md

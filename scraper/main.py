@@ -21,7 +21,9 @@ load_dotenv()
 from storage import telegram_sync           # noqa: E402
 
 ROOT = Path(__file__).parent.parent
-SEEN_PATH = ROOT / "data" / "seen.json"
+# SEEN_FILE env lets a second runner (e.g. the local Mac search job) keep its own
+# dedup memory without clobbering the git-tracked seen.json used by GitHub Actions.
+SEEN_PATH = Path(os.environ["SEEN_FILE"]) if os.environ.get("SEEN_FILE") else ROOT / "data" / "seen.json"
 STATE_PATH = ROOT / "data" / "state.json"
 SEND_DELAY = 1.0          # seconds between Telegram sends (avoid per-chat rate limit)
 AI_ALERT_EVERY = 3600     # at most one "AI unavailable" heads-up per hour

@@ -75,6 +75,9 @@ subreddits:
 # How many recent posts to pull each run (per subreddit feed / per search). Max 100.
 scan_limit: 100
 
+# How often the Telegram-controlled Mac search bot (bot/control.py) scans, in seconds.
+scan_interval_seconds: 300
+
 filters:
   # A post must contain AT LEAST ONE of these to be considered.
   required_keywords:
