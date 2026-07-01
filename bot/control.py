@@ -35,6 +35,17 @@ TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 _lock = threading.Lock()
 _scan_lock = threading.Lock()
 _last_scan = [0.0]
+_heartbeat = [time.time()]   # updated every loop; watchdog restarts us if it goes stale
+
+
+def _watchdog() -> None:
+    """If the scan loop stalls (e.g. sockets frozen across a Mac sleep/wake), exit so
+    launchd restarts us fresh — this self-heals the 'stuck after sleep' failure."""
+    while True:
+        time.sleep(30)
+        if time.time() - _heartbeat[0] > 3 * SCAN_INTERVAL:
+            print("[control] watchdog: loop stale — exiting for a clean restart")
+            os._exit(1)
 
 
 # ── persistent on/off state ────────────────────────────────────────────────
@@ -180,6 +191,7 @@ def _poll_loop() -> None:
 
 def _scan_loop() -> None:
     while True:
+        _heartbeat[0] = time.time()
         with _lock:
             active = _state.get("active", False)
         if active and (time.time() - _last_scan[0]) >= SCAN_INTERVAL:
@@ -208,6 +220,7 @@ def main() -> None:
     telegram_sync.notify(f"🤖 Brainsify client finder is online ({state}).\n"
                          "Send /status, /stop to pause, /start to resume.")
     threading.Thread(target=_scan_loop, daemon=True).start()
+    threading.Thread(target=_watchdog, daemon=True).start()
     _poll_loop()
 
 
